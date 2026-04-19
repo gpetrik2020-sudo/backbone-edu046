@@ -1,200 +1,305 @@
-{% extends "base.html" %}
-
-{% block head %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ curso.titulo }}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-.hero {
-  position:relative;
-  width:100%;
-  height:340px;
-  overflow:hidden;
-  background:var(--ink);
+:root {
+  --ink:    #0e0e0e;
+  --paper:  #f5f2eb;
+  --cream:  #ede9df;
+  --rule:   #c8c2b4;
+  --accent: #1a3a5c;
+  --muted:  #6b6560;
+  --green:  #2d5a27;
+  --amber:  #b8860b;
 }
-.hero img {
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  opacity:0.45;
-}
-.hero-text {
-  position:absolute;
-  inset:0;
+* { box-sizing:border-box; margin:0; padding:0; }
+body { background:var(--paper); color:var(--ink); font-family:'Inter',sans-serif; font-weight:300; font-size:14px; line-height:1.6; }
+
+/* MASTHEAD */
+.masthead {
+  border-bottom:2px solid var(--ink);
+  padding:0 48px;
   display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  padding:20px;
+  align-items:stretch;
 }
-.hero-text h1 {
-  font-family:'Playfair Display',serif;
-  font-size:clamp(28px,5vw,52px);
-  font-weight:600;
-  color:white;
-  line-height:1.15;
-  margin-bottom:12px;
+.masthead-brand {
+  padding:20px 32px 20px 0;
+  border-right:1px solid var(--rule);
 }
-.hero-text p {
-  font-size:16px;
-  color:rgba(255,255,255,0.7);
-  max-width:480px;
-}
-.section-label {
-  padding:40px 40px 16px;
+.masthead-brand .mono {
   font-family:'DM Mono',monospace;
   font-size:11px;
-  text-transform:uppercase;
-  letter-spacing:0.12em;
   color:var(--muted);
-}
-.grid {
-  display:grid;
-  grid-template-columns:repeat(auto-fill, minmax(220px, 1fr));
-  gap:2px;
-  padding:0 40px 60px;
-}
-.flip-wrap {
-  aspect-ratio:3/4;
-  perspective:1000px;
-  cursor:pointer;
-}
-.flip-inner {
-  position:relative;
-  width:100%;
-  height:100%;
-  transform-style:preserve-3d;
-  transition:transform 0.5s cubic-bezier(0.4,0,0.2,1);
-}
-.flip-wrap:hover .flip-inner { transform:rotateY(180deg); }
-.flip-front, .flip-back {
-  position:absolute;
-  inset:0;
-  backface-visibility:hidden;
-  overflow:hidden;
-}
-.flip-front img {
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  display:block;
-}
-.flip-front-label {
-  position:absolute;
-  bottom:0;
-  left:0;
-  right:0;
-  padding:40px 16px 14px;
-  background:linear-gradient(to top, rgba(20,20,40,0.92) 0%, transparent 100%);
-}
-.flip-front-label .num {
-  font-family:'DM Mono',monospace;
-  font-size:10px;
-  color:rgba(255,255,255,0.5);
-  letter-spacing:0.1em;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
   margin-bottom:4px;
 }
-.flip-front-label h3 {
-  font-family:'Playfair Display',serif;
-  font-size:15px;
+.masthead-brand h1 {
+  font-family:'DM Serif Display',serif;
+  font-size:22px;
   font-weight:400;
-  color:white;
-  line-height:1.3;
+  color:var(--ink);
+  letter-spacing:-0.02em;
+  line-height:1.2;
 }
-.flip-back {
-  background:var(--ink);
-  transform:rotateY(180deg);
+.masthead-meta {
+  padding:20px 0 20px 32px;
   display:flex;
-  flex-direction:column;
-  justify-content:space-between;
-  padding:20px;
+  align-items:center;
+  gap:28px;
 }
-.flip-back .fb-num {
+.meta-pill { display:flex; flex-direction:column; gap:2px; }
+.meta-pill .label { font-size:10px; text-transform:uppercase; letter-spacing:0.1em; color:var(--muted); }
+.meta-pill .value { font-family:'DM Mono',monospace; font-size:13px; color:var(--ink); }
+.masthead-actions {
+  margin-left:auto;
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.btn-eval {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:8px 18px; background:var(--accent); color:#fff;
+  text-decoration:none; font-size:12px; font-weight:500;
+  letter-spacing:0.04em; border-radius:2px; transition:background 0.15s;
+}
+.btn-eval:hover { background:#0f2540; }
+
+/* LAYOUT */
+.layout {
+  display:grid;
+  grid-template-columns:260px 1fr;
+  min-height:calc(100vh - 73px);
+}
+
+/* SIDEBAR */
+.sidebar {
+  border-right:1px solid var(--rule);
+  padding:28px 20px;
+  position:sticky;
+  top:0;
+  height:calc(100vh - 73px);
+  overflow-y:auto;
+}
+.sidebar h3 {
   font-family:'DM Mono',monospace;
   font-size:10px;
-  color:var(--accent);
-  letter-spacing:0.1em;
+  text-transform:uppercase;
+  letter-spacing:0.14em;
+  color:var(--muted);
+  margin-bottom:12px;
+  padding-bottom:8px;
+  border-bottom:1px solid var(--cream);
 }
-.flip-back h3 {
-  font-family:'Playfair Display',serif;
-  font-size:16px;
-  font-weight:400;
-  color:white;
-  line-height:1.35;
-  margin:8px 0;
-}
-.flip-back p {
-  font-size:12px;
-  color:rgba(255,255,255,0.6);
-  line-height:1.6;
-  flex:1;
-  margin-bottom:16px;
-}
-.flip-back-btns {
-  display:flex;
-  gap:6px;
-}
-.flip-back-btns a {
-  flex:1;
-  display:block;
-  text-align:center;
-  padding:9px 6px;
+.sidebar-semana { margin-bottom:20px; }
+.sidebar-semana-label {
   font-size:11px;
   font-weight:500;
-  letter-spacing:0.04em;
-  border-radius:2px;
-  transition:background 0.15s;
-  text-decoration:none;
-}
-.btn-podcast {
-  background:transparent;
   color:var(--accent);
-  border:1px solid var(--accent);
+  margin-bottom:6px;
+  text-transform:uppercase;
+  letter-spacing:0.06em;
 }
-.btn-podcast:hover { background:var(--accent); color:white; }
-.btn-leer {
-  background:var(--accent);
-  color:white;
-  border:1px solid var(--accent);
+.sidebar-link {
+  display:block;
+  padding:4px 8px;
+  font-size:11px;
+  color:var(--muted);
+  text-decoration:none;
+  border-radius:2px;
+  line-height:1.4;
+  transition:all 0.12s;
 }
-.btn-leer:hover { background:#c1121f; border-color:#c1121f; }
+.sidebar-link:hover { color:var(--ink); background:var(--cream); }
+.sidebar-eval-btn {
+  display:flex; align-items:center; gap:6px;
+  width:100%; padding:6px 10px; margin-top:8px;
+  background:var(--cream); border:1px solid var(--rule);
+  border-radius:2px; font-size:11px; font-weight:500;
+  color:var(--accent); text-decoration:none; cursor:pointer;
+  transition:all 0.12s;
+}
+.sidebar-eval-btn:hover { background:var(--accent); color:white; border-color:var(--accent); }
+
+/* MAIN */
+.main { padding:40px 56px; max-width:960px; }
+
+/* STATS */
+.stats-row {
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:1px;
+  background:var(--rule);
+  border:1px solid var(--rule);
+  margin-bottom:40px;
+}
+.stat-card { background:var(--paper); padding:20px 24px; }
+.stat-card .s-label { font-family:'DM Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:0.1em; color:var(--muted); margin-bottom:8px; }
+.stat-card .s-val { font-family:'DM Serif Display',serif; font-size:32px; line-height:1; color:var(--ink); }
+.stat-card .s-sub { font-size:11px; color:var(--muted); margin-top:4px; }
+
+/* SECTION HEADING */
+.section-heading {
+  display:flex; align-items:baseline; gap:16px;
+  margin-bottom:24px; padding-bottom:12px;
+  border-bottom:1px solid var(--rule);
+}
+.section-heading h2 { font-family:'DM Serif Display',serif; font-size:20px; font-weight:400; }
+.section-heading .sh-meta { font-family:'DM Mono',monospace; font-size:11px; color:var(--muted); }
+
+/* SEMANA BLOCK */
+.semana-block { margin-bottom:40px; }
+.semana-header { display:flex; align-items:center; gap:14px; margin-bottom:16px; }
+.semana-num {
+  font-family:'DM Mono',monospace; font-size:10px;
+  text-transform:uppercase; letter-spacing:0.1em;
+  color:var(--paper); background:var(--ink);
+  padding:3px 10px; border-radius:1px;
+}
+.semana-title { font-family:'DM Serif Display',serif; font-size:16px; font-weight:400; }
+
+/* EVAL STRIP */
+.eval-strip {
+  display:flex; align-items:center; gap:10px;
+  padding:10px 16px; background:#eef3f8;
+  border:1px solid #c5d5e8; border-radius:2px; margin-bottom:14px;
+}
+.eval-strip span { font-size:12px; color:var(--accent); flex:1; }
+.eval-strip a {
+  display:inline-flex; align-items:center; gap:5px;
+  padding:5px 14px; background:var(--accent); color:white;
+  text-decoration:none; font-size:11px; font-weight:500;
+  border-radius:2px; transition:background 0.15s;
+}
+.eval-strip a:hover { background:#0f2540; }
+
+/* TOPICS GRID */
+.topics-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(200px,1fr));
+  gap:8px;
+}
+.topic-card {
+  display:block; text-decoration:none;
+  padding:14px 16px; background:white;
+  border:1px solid var(--rule); border-radius:2px;
+  transition:all 0.15s; position:relative; overflow:hidden;
+}
+.topic-card::before {
+  content:''; position:absolute; left:0; top:0; bottom:0; width:3px;
+  background:var(--accent); transform:scaleX(0); transform-origin:left;
+  transition:transform 0.15s;
+}
+.topic-card:hover { border-color:var(--accent); background:#f8fafd; transform:translateY(-1px); }
+.topic-card:hover::before { transform:scaleX(1); }
+.topic-card .tc-num { font-family:'DM Mono',monospace; font-size:10px; color:var(--muted); margin-bottom:6px; }
+.topic-card .tc-title { font-size:12px; font-weight:500; color:var(--ink); line-height:1.4; }
 </style>
-{% endblock %}
+</head>
+<body>
 
-{% block content %}
-<div class="hero">
-  <img src="/static/img/{{ curso.banner }}" alt="banner">
-  <div class="hero-text">
+<header class="masthead">
+  <div class="masthead-brand">
+    <div class="mono">EDU046 · Programa Académico</div>
     <h1>{{ curso.titulo }}</h1>
-    <p>{{ curso.subtitulo }}</p>
   </div>
-</div>
-
-<div class="section-label" id="modulos">Módulos del curso</div>
-<div class="grid">
-  {% for m in modulos %}
-  <div class="flip-wrap">
-    <div class="flip-inner">
-      <div class="flip-front">
-        <img src="/static/img/{{ m.imagen }}" alt="{{ m.titulo }}">
-        <div class="flip-front-label">
-          <div class="num">{{ '%02d'|format(m.num|int) }}</div>
-          <h3>{{ m.titulo }}</h3>
-        </div>
-      </div>
-      <div class="flip-back">
-        <div>
-          <div class="fb-num">{{ '%02d'|format(m.num|int) }}</div>
-          <h3>{{ m.titulo }}</h3>
-          <p>{{ m.texto[:140] }}…</p>
-        </div>
-        <div class="flip-back-btns">
-          {% if m.podcast_url %}
-          <a class="btn-podcast" href="{{ m.podcast_url }}" target="_blank" rel="noopener">🎧 Podcast</a>
-          {% endif %}
-          <a class="btn-leer" href="/modulo/{{ m.id }}">Leer capítulo →</a>
-        </div>
-      </div>
+  <div class="masthead-meta">
+    <div class="meta-pill">
+      <span class="label">Semanas</span>
+      <span class="value">{{ semanas|length }}</span>
+    </div>
+    <div class="meta-pill">
+      <span class="label">Temas</span>
+      <span class="value">18</span>
+    </div>
+    <div class="meta-pill">
+      <span class="label">Evaluaciones</span>
+      <span class="value">{{ semanas|length }}</span>
     </div>
   </div>
-  {% endfor %}
+  <div class="masthead-actions">
+    <a href="#evaluaciones" class="btn-eval">Evaluaciones →</a>
+  </div>
+</header>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <h3>Programa</h3>
+    {% for s in semanas %}
+    <div class="sidebar-semana">
+      <div class="sidebar-semana-label">{{ s.titulo }}</div>
+      {% for t in s.temas %}
+      <a href="/view/{{ t.filename }}" class="sidebar-link">{{ t.titulo }}</a>
+      {% endfor %}
+      <a href="/evaluacion/{{ s.id }}" class="sidebar-eval-btn">
+        <span style="width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0"></span>
+        Evaluación {{ s.titulo[:10] }}
+      </a>
+    </div>
+    {% endfor %}
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="s-label">Semanas</div>
+        <div class="s-val">{{ semanas|length }}</div>
+        <div class="s-sub">de contenido</div>
+      </div>
+      <div class="stat-card">
+        <div class="s-label">Temas</div>
+        <div class="s-val">18</div>
+        <div class="s-sub">nodos semánticos</div>
+      </div>
+      <div class="stat-card">
+        <div class="s-label">Preguntas</div>
+        <div class="s-val">60</div>
+        <div class="s-sub">10 por semana</div>
+      </div>
+      <div class="stat-card">
+        <div class="s-label">Método</div>
+        <div class="s-val" style="font-size:16px;margin-top:4px;">RAG + IA</div>
+        <div class="s-sub">evaluación adaptativa</div>
+      </div>
+    </div>
+
+    <div class="section-heading">
+      <h2>Programa de estudios</h2>
+      <span class="sh-meta">Seriación completa · 18 temas</span>
+    </div>
+
+    {% for s in semanas %}
+    <div class="semana-block" id="evaluaciones">
+      <div class="semana-header">
+        <span class="semana-num">{{ s.titulo }}</span>
+      </div>
+      <div class="eval-strip">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style="flex-shrink:0"><rect x="1" y="1" width="12" height="12" rx="1.5" stroke="#1a3a5c" stroke-width="1.3"/><path d="M3.5 7h7M3.5 4.5h7M3.5 9.5h4.5" stroke="#1a3a5c" stroke-width="1.3" stroke-linecap="round"/></svg>
+        <span>Evaluación disponible — 10 preguntas con corrección automática por IA</span>
+        <a href="/evaluacion/{{ s.id }}">Ir a evaluación →</a>
+      </div>
+      <div class="topics-grid">
+        {% for t in s.temas %}
+        <a href="/view/{{ t.filename }}" class="topic-card">
+          <div class="tc-num">{{ t.num }}</div>
+          <div class="tc-title">{{ t.titulo }}</div>
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+    {% endfor %}
+
+  </main>
 </div>
-{% endblock %}
+
+</body>
+</html>
