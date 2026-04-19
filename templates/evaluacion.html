@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ ev.titulo }} — EDU046</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:    #0e0e0e;
+  --paper:  #f5f2eb;
+  --cream:  #ede9df;
+  --rule:   #c8c2b4;
+  --accent: #1a3a5c;
+  --muted:  #6b6560;
+  --green:  #2d5a27;
+  --red:    #8b1a1a;
+  --amber:  #b8860b;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background:var(--paper); color:var(--ink); font-family:'Inter',sans-serif; font-weight:300; font-size:14px; line-height:1.6; }
+.topbar { border-bottom:2px solid var(--ink); padding:14px 48px; display:flex; align-items:center; gap:20px; background:var(--paper); position:sticky; top:0; z-index:100; }
+.topbar a { font-family:'DM Mono',monospace; font-size:11px; color:var(--muted); text-decoration:none; letter-spacing:0.08em; }
+.topbar a:hover { color:var(--ink); }
+.topbar .sep { color:var(--rule); }
+.topbar .title { font-family:'DM Serif Display',serif; font-size:16px; font-weight:400; flex:1; }
+.topbar .pts-badge { font-family:'DM Mono',monospace; font-size:11px; padding:3px 10px; border:1px solid var(--rule); border-radius:2px; color:var(--muted); }
+.wrap { max-width:780px; margin:0 auto; padding:40px 24px 80px; }
+.student-row { display:flex; gap:14px; margin-bottom:36px; }
+.student-row input { flex:1; padding:10px 14px; border:1px solid var(--rule); border-radius:2px; background:white; font-family:'Inter',sans-serif; font-size:14px; color:var(--ink); outline:none; transition:border-color 0.15s; }
+.student-row input:focus { border-color:var(--accent); }
+.student-row input::placeholder { color:var(--muted); }
+.progress-wrap { margin-bottom:32px; }
+.progress-label { display:flex; justify-content:space-between; margin-bottom:6px; font-family:'DM Mono',monospace; font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:0.08em; }
+.progress-track { height:3px; background:var(--cream); border-radius:99px; overflow:hidden; }
+.progress-fill { height:100%; background:var(--accent); border-radius:99px; transition:width 0.3s ease; width:0%; }
+.q-card { background:white; border:1px solid var(--rule); border-radius:2px; margin-bottom:14px; overflow:hidden; transition:border-color 0.15s; }
+.q-card:focus-within { border-color:var(--accent); }
+.q-header { display:flex; align-items:flex-start; gap:14px; padding:14px 18px 10px; }
+.q-num { font-family:'DM Mono',monospace; font-size:11px; color:var(--paper); background:var(--ink); padding:2px 7px; border-radius:1px; flex-shrink:0; margin-top:1px; }
+.q-text { font-size:13px; font-weight:400; color:var(--ink); line-height:1.5; flex:1; }
+.q-pts { font-family:'DM Mono',monospace; font-size:10px; color:var(--muted); flex-shrink:0; }
+textarea { width:100%; padding:10px 18px; border:none; border-top:1px solid var(--cream); resize:vertical; min-height:100px; font-family:'Inter',sans-serif; font-size:13px; color:var(--ink); background:transparent; outline:none; line-height:1.6; }
+.q-footer { padding:6px 18px 10px; }
+.char-count { font-family:'DM Mono',monospace; font-size:10px; color:var(--muted); }
+.q-result { display:none; padding:12px 18px 14px; border-top:1px solid var(--cream); }
+.q-result.show { display:block; }
+.r-row { display:flex; align-items:center; gap:10px; margin-bottom:6px; }
+.score-badge { font-family:'DM Mono',monospace; font-size:13px; font-weight:500; padding:2px 10px; border-radius:2px; }
+.score-badge.alto  { background:#e8f5e9; color:var(--green); }
+.score-badge.medio { background:#fff8e1; color:var(--amber); }
+.score-badge.bajo  { background:#fce4e4; color:var(--red); }
+.nivel-tag { font-size:11px; padding:2px 8px; border-radius:1px; text-transform:capitalize; letter-spacing:0.04em; }
+.nivel-destacado   { background:#e8f5e9; color:var(--green); }
+.nivel-competente  { background:#e3f0fb; color:var(--accent); }
+.nivel-basico      { background:#fff8e1; color:var(--amber); }
+.nivel-insuficiente{ background:#fce4e4; color:var(--red); }
+.r-comment { font-size:12px; color:var(--muted); line-height:1.5; font-style:italic; }
+.submit-area { margin-top:32px; text-align:center; }
+.submit-btn { display:inline-flex; align-items:center; gap:8px; padding:12px 36px; background:var(--accent); color:white; border:none; font-family:'Inter',sans-serif; font-size:14px; font-weight:500; cursor:pointer; border-radius:2px; transition:background 0.15s, transform 0.1s; }
+.submit-btn:hover { background:#0f2540; }
+.submit-btn:active { transform:scale(0.98); }
+.submit-btn:disabled { background:var(--rule); cursor:default; }
+
+/* ── Results panel ── */
+.results-panel { display:none; margin-top:40px; border:2px solid var(--ink); border-radius:3px; overflow:hidden; }
+.results-panel.show { display:block; animation:fadeIn 0.4s ease; }
+.rp-header { background:var(--ink); color:var(--paper); padding:20px 28px; display:flex; align-items:center; gap:24px; }
+.rp-header h2 { font-family:'DM Serif Display',serif; font-size:18px; font-weight:400; flex:1; }
+.total-score { text-align:right; }
+.total-score .ts-num { font-family:'DM Mono',monospace; font-size:36px; line-height:1; }
+.total-score .ts-label { font-size:11px; color:rgba(245,242,235,0.5); margin-top:2px; }
+
+/* question breakdown in results */
+.rp-questions { padding:20px 28px; border-bottom:0.5px solid var(--cream); background:white; }
+.rp-questions h3 { font-family:'DM Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:0.1em; color:var(--muted); margin-bottom:14px; }
+.rq-row { display:flex; align-items:center; gap:10px; margin-bottom:7px; }
+.rq-label { font-family:'DM Mono',monospace; font-size:10px; color:var(--muted); width:24px; flex-shrink:0; }
+.rq-track { flex:1; height:6px; background:var(--cream); border-radius:99px; overflow:hidden; }
+.rq-fill { height:100%; border-radius:99px; }
+.rq-fill.alto  { background:var(--green); }
+.rq-fill.medio { background:var(--amber); }
+.rq-fill.bajo  { background:var(--red); }
+.rq-score { font-family:'DM Mono',monospace; font-size:11px; color:var(--ink); width:32px; }
+.rq-nivel { font-size:10px; padding:1px 6px; border-radius:1px; }
+
+/* summary grid */
+.rp-summary { padding:20px 28px; display:grid; grid-template-columns:1fr 1fr; gap:14px; border-bottom:0.5px solid var(--cream); background:white; }
+.rp-item { padding:14px; background:var(--paper); border-radius:2px; }
+.rp-item h4 { font-family:'DM Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted); margin-bottom:6px; }
+.rp-item p { font-size:12px; line-height:1.5; color:var(--ink); }
+
+/* diagnostic block */
+.rp-diag { padding:20px 28px; background:var(--paper); }
+.rp-diag h4 { font-family:'DM Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted); margin-bottom:10px; }
+.rp-diag p { font-size:13px; line-height:1.7; color:var(--ink); }
+
+.rp-actions { padding:16px 28px; display:flex; gap:10px; justify-content:flex-end; background:white; border-top:0.5px solid var(--cream); }
+.rp-actions a, .rp-actions button { padding:8px 20px; font-family:'Inter',sans-serif; font-size:12px; font-weight:500; border-radius:2px; cursor:pointer; text-decoration:none; transition:all 0.15s; }
+.btn-secondary { border:1px solid var(--rule); background:transparent; color:var(--ink); }
+.btn-secondary:hover { border-color:var(--ink); }
+.btn-primary { background:var(--accent); color:white; border:none; }
+.btn-primary:hover { background:#0f2540; }
+
+.loader-overlay { display:none; position:fixed; inset:0; background:rgba(245,242,235,0.85); z-index:200; align-items:center; justify-content:center; flex-direction:column; gap:16px; }
+.loader-overlay.show { display:flex; }
+.loader-spinner { width:36px; height:36px; border:2px solid var(--rule); border-top-color:var(--accent); border-radius:50%; animation:spin 0.8s linear infinite; }
+.loader-text { font-family:'DM Mono',monospace; font-size:12px; color:var(--muted); letter-spacing:0.08em; }
+
+@keyframes spin  { to { transform:rotate(360deg); } }
+@keyframes fadeIn { from { opacity:0; } }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="/">← EDU046</a>
+  <span class="sep">/</span>
+  <span class="title">{{ ev.titulo }}</span>
+  <span class="pts-badge">100 pts · 10 preguntas</span>
+</div>
+
+<div class="loader-overlay" id="loader">
+  <div class="loader-spinner"></div>
+  <div class="loader-text">Evaluando con IA...</div>
+</div>
+
+<div class="wrap">
+
+  <div class="student-row">
+    <input type="text" id="nombre" placeholder="Nombre completo del estudiante">
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-label">
+      <span>Progreso</span>
+      <span id="prog-text">0 / 10 respondidas</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="prog-fill"></div>
+    </div>
+  </div>
+
+  <div id="preguntas">
+    {% for pregunta in ev.preguntas %}
+    <div class="q-card" id="qcard-{{ loop.index }}">
+      <div class="q-header">
+        <span class="q-num">{{ '%02d'|format(loop.index) }}</span>
+        <span class="q-text">{{ pregunta }}</span>
+        <span class="q-pts">10 pts</span>
+      </div>
+      <textarea id="p{{ loop.index }}" placeholder="Escribe tu respuesta aquí…" data-idx="{{ loop.index }}"></textarea>
+      <div class="q-footer">
+        <span class="char-count" id="c{{ loop.index }}">0 / 2000</span>
+      </div>
+      <div class="q-result" id="r{{ loop.index }}"></div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="submit-area">
+    <button class="submit-btn" id="submit-btn" onclick="enviar()">
+      Enviar y calificar
+    </button>
+  </div>
+
+  <!-- Results panel -->
+  <div class="results-panel" id="results-panel">
+    <div class="rp-header">
+      <h2 id="rp-title">Resultado</h2>
+      <div class="total-score">
+        <div class="ts-num" id="rp-score">—</div>
+        <div class="ts-label">puntos de 100</div>
+      </div>
+    </div>
+
+    <div class="rp-questions">
+      <h3>Detalle por pregunta</h3>
+      <div id="rp-q-rows"></div>
+    </div>
+
+    <div class="rp-summary">
+      <div class="rp-item">
+        <h4>Fortalezas</h4>
+        <p id="rp-fort">—</p>
+      </div>
+      <div class="rp-item">
+        <h4>Áreas de mejora</h4>
+        <p id="rp-mejora">—</p>
+      </div>
+    </div>
+
+    <div class="rp-diag">
+      <h4>Diagnóstico</h4>
+      <p id="rp-diag">—</p>
+    </div>
+
+    <div class="rp-actions">
+      <button class="btn-secondary" onclick="exportarJSON()">Exportar JSON</button>
+      <button class="btn-primary" onclick="window.print()">Imprimir</button>
+    </div>
+  </div>
+
+</div>
+
+{% raw %}
+<script>
+const SEMANA_ID = "{% endraw %}{{ semana_id }}{% raw %}";
+let resultadoGlobal = null;
+let respondidas = 0;
+
+for(let i = 1; i <= 10; i++){
+  const ta = document.getElementById('p'+i);
+  const cc = document.getElementById('c'+i);
+  let wasFilled = false;
+  ta.addEventListener('input', () => {
+    const l = ta.value.length;
+    cc.textContent = l + ' / 2000';
+    cc.style.color = l > 1800 ? '#b8860b' : '#6b6560';
+    const filled = l > 20;
+    if(filled !== wasFilled){
+      wasFilled = filled;
+      respondidas += filled ? 1 : -1;
+      const pct = (respondidas / 10) * 100;
+      document.getElementById('prog-fill').style.width = pct + '%';
+      document.getElementById('prog-text').textContent = respondidas + ' / 10 respondidas';
+    }
+  });
+}
+
+async function enviar(){
+  const nombre = document.getElementById('nombre').value.trim();
+  if(!nombre){ alert('Ingresa tu nombre para continuar.'); return; }
+
+  const respuestas = [];
+  for(let i = 1; i <= 10; i++){
+    respuestas.push({ pregunta: i, texto: document.getElementById('p'+i).value.trim() });
+  }
+  const empty = respuestas.filter(r => r.texto.length < 10).length;
+  if(empty > 5){
+    alert('Hay ' + empty + ' preguntas sin responder. Completa al menos 5.');
+    return;
+  }
+
+  document.getElementById('loader').classList.add('show');
+  document.getElementById('submit-btn').disabled = true;
+
+  try {
+    const res = await fetch('/calificar', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ semana_id: SEMANA_ID, estudiante: nombre, respuestas })
+    });
+    const data = await res.json();
+    if(data.error){ throw new Error(data.error); }
+    resultadoGlobal = data;
+    renderResultados(data);
+  } catch(e){
+    alert('Error al calificar: ' + e.message);
+    document.getElementById('submit-btn').disabled = false;
+  } finally {
+    document.getElementById('loader').classList.remove('show');
+  }
+}
+
+function nivelCls(n){ return n>=8?'alto':n>=6?'medio':'bajo'; }
+function nivelLabel(s){ return s||''; }
+
+function renderResultados(data){
+  // Per-question inline
+  data.resultados.forEach(r => {
+    const el = document.getElementById('r' + r.pregunta);
+    if(!el) return;
+    const cls  = nivelCls(r.score);
+    const nCls = 'nivel-' + (r.nivel||'basico');
+    el.innerHTML = `
+      <div class="r-row">
+        <span class="score-badge ${cls}">${r.score}/10</span>
+        <span class="nivel-tag ${nCls}">${r.nivel||''}</span>
+      </div>
+      <div class="r-comment">${r.comentario}</div>`;
+    el.classList.add('show');
+  });
+
+  // Header
+  document.getElementById('rp-title').textContent = 'Resultado — ' + data.estudiante;
+  document.getElementById('rp-score').textContent  = data.resumen.total;
+
+  // Question rows in results panel
+  const rows = data.resultados.map(r => {
+    const pct  = r.score * 10;
+    const cls  = nivelCls(r.score);
+    const nCls = 'nivel-' + (r.nivel||'basico');
+    return `<div class="rq-row">
+      <span class="rq-label">P${r.pregunta}</span>
+      <div class="rq-track"><div class="rq-fill ${cls}" style="width:${pct}%"></div></div>
+      <span class="rq-score">${r.score}/10</span>
+      <span class="rq-nivel nivel-tag ${nCls}">${r.nivel||''}</span>
+    </div>`;
+  }).join('');
+  document.getElementById('rp-q-rows').innerHTML = rows;
+
+  // Summary
+  document.getElementById('rp-fort').textContent   = data.resumen.fortalezas;
+  document.getElementById('rp-mejora').textContent = data.resumen.areas_mejora;
+  document.getElementById('rp-diag').textContent   = data.resumen.diagnostico;
+
+  document.getElementById('results-panel').classList.add('show');
+  document.getElementById('results-panel').scrollIntoView({ behavior:'smooth' });
+}
+
+function exportarJSON(){
+  if(!resultadoGlobal) return;
+  const blob = new Blob([JSON.stringify(resultadoGlobal, null, 2)], { type:'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'edu046_' + SEMANA_ID + '_' + (resultadoGlobal.estudiante||'resultado').replace(/\s+/g,'_') + '.json';
+  a.click();
+}
+</script>
+{% endraw %}
+</body>
+</html>

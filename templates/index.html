@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+
+{% block head %}
+<style>
+.hero {
+  position:relative;
+  width:100%;
+  height:340px;
+  overflow:hidden;
+  background:var(--ink);
+}
+.hero img {
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  opacity:0.45;
+}
+.hero-text {
+  position:absolute;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:20px;
+}
+.hero-text h1 {
+  font-family:'Playfair Display',serif;
+  font-size:clamp(28px,5vw,52px);
+  font-weight:600;
+  color:white;
+  line-height:1.15;
+  margin-bottom:12px;
+}
+.hero-text p {
+  font-size:16px;
+  color:rgba(255,255,255,0.7);
+  max-width:480px;
+}
+.section-label {
+  padding:40px 40px 16px;
+  font-family:'DM Mono',monospace;
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:0.12em;
+  color:var(--muted);
+}
+.grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(220px, 1fr));
+  gap:2px;
+  padding:0 40px 60px;
+}
+.flip-wrap {
+  aspect-ratio:3/4;
+  perspective:1000px;
+  cursor:pointer;
+}
+.flip-inner {
+  position:relative;
+  width:100%;
+  height:100%;
+  transform-style:preserve-3d;
+  transition:transform 0.5s cubic-bezier(0.4,0,0.2,1);
+}
+.flip-wrap:hover .flip-inner { transform:rotateY(180deg); }
+.flip-front, .flip-back {
+  position:absolute;
+  inset:0;
+  backface-visibility:hidden;
+  overflow:hidden;
+}
+.flip-front img {
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+.flip-front-label {
+  position:absolute;
+  bottom:0;
+  left:0;
+  right:0;
+  padding:40px 16px 14px;
+  background:linear-gradient(to top, rgba(20,20,40,0.92) 0%, transparent 100%);
+}
+.flip-front-label .num {
+  font-family:'DM Mono',monospace;
+  font-size:10px;
+  color:rgba(255,255,255,0.5);
+  letter-spacing:0.1em;
+  margin-bottom:4px;
+}
+.flip-front-label h3 {
+  font-family:'Playfair Display',serif;
+  font-size:15px;
+  font-weight:400;
+  color:white;
+  line-height:1.3;
+}
+.flip-back {
+  background:var(--ink);
+  transform:rotateY(180deg);
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  padding:20px;
+}
+.flip-back .fb-num {
+  font-family:'DM Mono',monospace;
+  font-size:10px;
+  color:var(--accent);
+  letter-spacing:0.1em;
+}
+.flip-back h3 {
+  font-family:'Playfair Display',serif;
+  font-size:16px;
+  font-weight:400;
+  color:white;
+  line-height:1.35;
+  margin:8px 0;
+}
+.flip-back p {
+  font-size:12px;
+  color:rgba(255,255,255,0.6);
+  line-height:1.6;
+  flex:1;
+  margin-bottom:16px;
+}
+.flip-back-btns {
+  display:flex;
+  gap:6px;
+}
+.flip-back-btns a {
+  flex:1;
+  display:block;
+  text-align:center;
+  padding:9px 6px;
+  font-size:11px;
+  font-weight:500;
+  letter-spacing:0.04em;
+  border-radius:2px;
+  transition:background 0.15s;
+  text-decoration:none;
+}
+.btn-podcast {
+  background:transparent;
+  color:var(--accent);
+  border:1px solid var(--accent);
+}
+.btn-podcast:hover { background:var(--accent); color:white; }
+.btn-leer {
+  background:var(--accent);
+  color:white;
+  border:1px solid var(--accent);
+}
+.btn-leer:hover { background:#c1121f; border-color:#c1121f; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="hero">
+  <img src="/static/img/{{ curso.banner }}" alt="banner">
+  <div class="hero-text">
+    <h1>{{ curso.titulo }}</h1>
+    <p>{{ curso.subtitulo }}</p>
+  </div>
+</div>
+
+<div class="section-label" id="modulos">Módulos del curso</div>
+<div class="grid">
+  {% for m in modulos %}
+  <div class="flip-wrap">
+    <div class="flip-inner">
+      <div class="flip-front">
+        <img src="/static/img/{{ m.imagen }}" alt="{{ m.titulo }}">
+        <div class="flip-front-label">
+          <div class="num">{{ '%02d'|format(m.num|int) }}</div>
+          <h3>{{ m.titulo }}</h3>
+        </div>
+      </div>
+      <div class="flip-back">
+        <div>
+          <div class="fb-num">{{ '%02d'|format(m.num|int) }}</div>
+          <h3>{{ m.titulo }}</h3>
+          <p>{{ m.texto[:140] }}…</p>
+        </div>
+        <div class="flip-back-btns">
+          {% if m.podcast_url %}
+          <a class="btn-podcast" href="{{ m.podcast_url }}" target="_blank" rel="noopener">🎧 Podcast</a>
+          {% endif %}
+          <a class="btn-leer" href="/modulo/{{ m.id }}">Leer capítulo →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

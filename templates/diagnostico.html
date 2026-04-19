@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diagnóstico Final — EDU046</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:    #0e0e0e;
+  --paper:  #f5f2eb;
+  --cream:  #ede9df;
+  --rule:   #c8c2b4;
+  --accent: #1a3a5c;
+  --muted:  #6b6560;
+  --green:  #2d5a27;
+  --red:    #8b1a1a;
+  --amber:  #b8860b;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'Inter', sans-serif;
+  font-weight: 300;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.topbar {
+  border-bottom: 2px solid var(--ink);
+  padding: 14px 48px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: var(--paper);
+}
+.topbar a { font-family:'DM Mono',monospace; font-size:11px; color:var(--muted); text-decoration:none; letter-spacing:0.08em; }
+.topbar a:hover { color:var(--ink); }
+.topbar .sep { color: var(--rule); }
+.topbar .title { font-family:'DM Serif Display',serif; font-size:16px; font-weight:400; }
+.wrap { max-width: 900px; margin: 0 auto; padding: 40px 24px 80px; }
+.diag-hero { display:flex; gap:40px; align-items:flex-start; margin-bottom:48px; padding-bottom:32px; border-bottom:1px solid var(--rule); }
+.diag-hero-text { flex:1; }
+.diag-hero-text h1 { font-family:'DM Serif Display',serif; font-size:28px; font-weight:400; margin-bottom:8px; line-height:1.2; }
+.diag-hero-text p { font-size:13px; color:var(--muted); max-width:480px; }
+.global-score-ring { flex-shrink:0; width:140px; text-align:center; }
+.ring-svg { display:block; margin:0 auto 8px; }
+.ring-num { font-family:'DM Serif Display',serif; font-size:26px; line-height:1; color:var(--ink); }
+.ring-label { font-family:'DM Mono',monospace; font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:0.08em; }
+.empty-state { text-align:center; padding:60px 24px; color:var(--muted); }
+.empty-state h2 { font-family:'DM Serif Display',serif; font-size:20px; font-weight:400; margin-bottom:10px; color:var(--ink); }
+.empty-state p { font-size:13px; margin-bottom:24px; }
+.empty-links { display:flex; gap:10px; justify-content:center; }
+.empty-links a { padding:8px 20px; border:1px solid var(--rule); border-radius:2px; text-decoration:none; color:var(--ink); font-size:12px; transition:all 0.15s; }
+.empty-links a:hover { border-color:var(--accent); color:var(--accent); }
+.semanas-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:40px; }
+.semana-card { background:white; border:1px solid var(--rule); border-radius:2px; overflow:hidden; }
+.semana-card.pending { opacity:0.5; }
+.sc-head { padding:14px 16px; border-bottom:1px solid var(--cream); display:flex; align-items:center; justify-content:space-between; }
+.sc-head .sc-label { font-family:'DM Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:0.1em; color:var(--muted); }
+.sc-head .sc-status { width:8px; height:8px; border-radius:50%; background:var(--rule); }
+.sc-head .sc-status.done { background:var(--green); }
+.sc-body { padding:16px; }
+.sc-body h3 { font-size:13px; font-weight:500; margin-bottom:12px; line-height:1.4; }
+.sc-score { font-family:'DM Serif Display',serif; font-size:36px; line-height:1; margin-bottom:4px; }
+.sc-score-sub { font-size:11px; color:var(--muted); margin-bottom:14px; }
+.sc-bar-wrap { height:4px; background:var(--cream); border-radius:99px; margin-bottom:12px; overflow:hidden; }
+.sc-bar { height:100%; border-radius:99px; background:var(--green); transition:width 0.6s ease; }
+.sc-bar.medio { background:var(--amber); }
+.sc-bar.bajo { background:var(--red); }
+.sc-mini { font-size:11px; color:var(--muted); font-style:italic; line-height:1.4; }
+.sc-pending-text { font-size:12px; color:var(--muted); padding:8px 0; }
+.sc-pending-text a { color:var(--accent); text-decoration:none; }
+.analytics-section { margin-bottom:40px; }
+.section-head { display:flex; align-items:baseline; gap:16px; margin-bottom:20px; padding-bottom:10px; border-bottom:1px solid var(--rule); }
+.section-head h2 { font-family:'DM Serif Display',serif; font-size:18px; font-weight:400; }
+.section-head span { font-family:'DM Mono',monospace; font-size:11px; color:var(--muted); }
+.bar-chart { display:grid; gap:8px; }
+.bc-row { display:flex; align-items:center; gap:12px; }
+.bc-label { font-family:'DM Mono',monospace; font-size:11px; color:var(--muted); width:80px; flex-shrink:0; text-align:right; }
+.bc-track { flex:1; height:8px; background:var(--cream); border-radius:99px; overflow:hidden; }
+.bc-fill { height:100%; border-radius:99px; background:var(--accent); transition:width 0.6s ease; }
+.bc-fill.medio { background:var(--amber); }
+.bc-fill.bajo { background:var(--red); }
+.bc-val { font-family:'DM Mono',monospace; font-size:11px; color:var(--ink); width:40px; }
+.final-diag { background:var(--ink); color:var(--paper); padding:28px 32px; border-radius:3px; margin-bottom:32px; }
+.final-diag h2 { font-family:'DM Serif Display',serif; font-size:18px; font-weight:400; margin-bottom:16px; }
+.fd-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:20px; }
+.fd-item h4 { font-family:'DM Mono',monospace; font-size:10px; text-transform:uppercase; letter-spacing:0.08em; color:rgba(245,242,235,0.5); margin-bottom:6px; }
+.fd-item p { font-size:13px; line-height:1.5; color:rgba(245,242,235,0.85); }
+.fd-diag-text { padding:16px; background:rgba(255,255,255,0.06); border-radius:2px; font-size:13px; line-height:1.6; color:rgba(245,242,235,0.85); }
+.actions-row { display:flex; gap:10px; justify-content:flex-end; }
+.actions-row a, .actions-row button { padding:8px 20px; font-family:'Inter',sans-serif; font-size:12px; font-weight:500; border-radius:2px; cursor:pointer; text-decoration:none; transition:all 0.15s; }
+.btn-secondary { border:1px solid var(--rule); background:transparent; color:var(--ink); }
+.btn-secondary:hover { border-color:var(--ink); }
+.btn-primary { background:var(--accent); color:white; border:none; }
+.btn-primary:hover { background:#0f2540; }
+.gen-btn { display:inline-flex; align-items:center; gap:8px; padding:10px 24px; background:white; border:1px solid var(--rule); border-radius:2px; font-family:'Inter',sans-serif; font-size:13px; font-weight:500; color:var(--ink); cursor:pointer; transition:all 0.15s; margin-top:16px; }
+.gen-btn:hover { border-color:var(--accent); color:var(--accent); }
+.gen-btn:disabled { opacity:0.5; cursor:default; }
+.spinner { width:14px; height:14px; border:2px solid var(--rule); border-top-color:var(--accent); border-radius:50%; animation:spin 0.7s linear infinite; display:none; }
+.spinner.show { display:block; }
+@keyframes spin { to { transform:rotate(360deg); } }
+@keyframes fadeIn { from { opacity:0; transform:translateY(6px); } }
+.fade-in { animation:fadeIn 0.4s ease both; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="/">← EDU046</a>
+  <span class="sep">/</span>
+  <span class="title">Diagnóstico Final</span>
+</div>
+
+<div class="wrap" id="wrap"></div>
+
+{% raw %}
+<script>
+const EVALS_CONFIG = {
+  semana1: { titulo: 'Semana 1', subtitulo: 'El mercado como sistema' },
+  semana2: { titulo: 'Semana 2', subtitulo: 'Datos, instrumentos y métodos' },
+  semana3: { titulo: 'Semana 3', subtitulo: 'Modelos, decisión y ética' }
+};
+
+function loadData(){
+  const out = {};
+  for(const k of Object.keys(EVALS_CONFIG)){
+    const raw = localStorage.getItem('edu046_' + k);
+    if(raw){ try { out[k] = JSON.parse(raw); } catch(e){} }
+  }
+  return out;
+}
+
+function pctBarClass(n){ return n >= 80 ? '' : n >= 60 ? 'medio' : 'bajo'; }
+
+function render(){
+  const data = loadData();
+  const keys = Object.keys(EVALS_CONFIG);
+  const done = keys.filter(k => data[k]);
+  const wrap = document.getElementById('wrap');
+
+  if(done.length === 0){
+    wrap.innerHTML = `
+      <div class="empty-state">
+        <h2>Sin evaluaciones todavía</h2>
+        <p>Completa al menos una evaluación para ver tu diagnóstico.</p>
+        <div class="empty-links">
+          <a href="/evaluacion/semana1">Semana 1 →</a>
+          <a href="/evaluacion/semana2">Semana 2 →</a>
+          <a href="/evaluacion/semana3">Semana 3 →</a>
+        </div>
+      </div>`;
+    return;
+  }
+
+  let totalSum = 0, totalCount = 0;
+  done.forEach(k => { totalSum += data[k].resumen.total; totalCount += 100; });
+  const globalPct = Math.round((totalSum / totalCount) * 100);
+  const circum  = 2 * Math.PI * 40;
+  const dashOff = circum * (1 - globalPct / 100);
+
+  const cardHTML = keys.map(k => {
+    const cfg = EVALS_CONFIG[k];
+    const d   = data[k];
+    if(!d) return `
+      <div class="semana-card pending">
+        <div class="sc-head"><span class="sc-label">${cfg.titulo}</span><span class="sc-status"></span></div>
+        <div class="sc-body">
+          <h3>${cfg.subtitulo}</h3>
+          <div class="sc-pending-text">No completada · <a href="/evaluacion/${k}">Ir →</a></div>
+        </div>
+      </div>`;
+    const bCls = pctBarClass(d.resumen.total);
+    return `
+      <div class="semana-card fade-in">
+        <div class="sc-head"><span class="sc-label">${cfg.titulo}</span><span class="sc-status done"></span></div>
+        <div class="sc-body">
+          <h3>${cfg.subtitulo}</h3>
+          <div class="sc-score">${d.resumen.total}</div>
+          <div class="sc-score-sub">de 100 pts · prom ${d.resumen.promedio}</div>
+          <div class="sc-bar-wrap"><div class="sc-bar ${bCls}" style="width:${d.resumen.total}%"></div></div>
+          <div class="sc-mini">${d.resumen.diagnostico.substring(0,100)}…</div>
+        </div>
+      </div>`;
+  }).join('');
+
+  const barRows = done.map(k => {
+    const bCls = pctBarClass(data[k].resumen.total);
+    return `
+      <div class="bc-row">
+        <div class="bc-label">${EVALS_CONFIG[k].titulo}</div>
+        <div class="bc-track"><div class="bc-fill ${bCls}" style="width:${data[k].resumen.total}%"></div></div>
+        <div class="bc-val">${data[k].resumen.total} pts</div>
+      </div>`;
+  }).join('');
+
+  let questionRows = '';
+  done.forEach(k => {
+    data[k].resultados.forEach(r => {
+      const pct  = r.score * 10;
+      const bCls = pctBarClass(pct);
+      questionRows += `
+        <div class="bc-row">
+          <div class="bc-label" style="font-size:9px;width:100px">${EVALS_CONFIG[k].titulo} P${r.pregunta}</div>
+          <div class="bc-track"><div class="bc-fill ${bCls}" style="width:${pct}%"></div></div>
+          <div class="bc-val">${r.score}/10</div>
+        </div>`;
+    });
+  });
+
+  wrap.innerHTML = `
+    <div class="diag-hero">
+      <div class="diag-hero-text">
+        <h1>Diagnóstico<br>de aprendizaje</h1>
+        <p>Análisis basado en ${done.length} evaluación${done.length>1?'es':''} completada${done.length>1?'s':''}. ${3-done.length>0?(3-done.length)+' pendiente'+(3-done.length>1?'s':'')+'.' : 'Programa completo.'}</p>
+        ${done.length < 3 ? `<div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
+          ${keys.filter(k=>!data[k]).map(k=>`<a href="/evaluacion/${k}" style="padding:6px 14px;border:1px solid var(--rule);border-radius:2px;text-decoration:none;font-size:12px;color:var(--accent)">Completar ${EVALS_CONFIG[k].titulo} →</a>`).join('')}
+        </div>` : ''}
+      </div>
+      <div class="global-score-ring">
+        <svg class="ring-svg" width="100" height="100" viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="40" fill="none" stroke="#ede9df" stroke-width="8"/>
+          <circle cx="50" cy="50" r="40" fill="none"
+            stroke="${globalPct>=80?'#2d5a27':globalPct>=60?'#b8860b':'#8b1a1a'}"
+            stroke-width="8" stroke-dasharray="${circum}" stroke-dashoffset="${dashOff}"
+            stroke-linecap="round" transform="rotate(-90 50 50)"/>
+        </svg>
+        <div class="ring-num">${globalPct}<span style="font-size:16px">%</span></div>
+        <div class="ring-label">promedio global</div>
+      </div>
+    </div>
+
+    <div class="semanas-grid">${cardHTML}</div>
+
+    <div class="analytics-section">
+      <div class="section-head"><h2>Comparativa por semana</h2><span>puntuación / 100</span></div>
+      <div class="bar-chart">${barRows}</div>
+    </div>
+
+    <div class="analytics-section">
+      <div class="section-head"><h2>Desglose por pregunta</h2><span>score individual</span></div>
+      <div class="bar-chart">${questionRows}</div>
+    </div>
+
+    <div class="analytics-section">
+      <div class="section-head"><h2>Diagnóstico generado por IA</h2><span>síntesis del perfil conceptual</span></div>
+      <div id="final-diag-container">
+        <p style="font-size:13px;color:var(--muted)">Genera un diagnóstico integrado basado en tus evaluaciones completadas.</p>
+        <button class="gen-btn" id="gen-btn" onclick="generarDiagnostico()">
+          <div class="spinner" id="gen-spinner"></div>
+          Generar diagnóstico final con IA
+        </button>
+      </div>
+    </div>
+
+    <div class="actions-row">
+      <button class="btn-secondary" onclick="limpiarTodo()">Limpiar datos</button>
+      <button class="btn-primary" onclick="exportarDiagnostico()">Exportar diagnóstico</button>
+    </div>`;
+}
+
+async function generarDiagnostico(){
+  const data = loadData();
+  const done = Object.keys(EVALS_CONFIG).filter(k => data[k]);
+  if(done.length === 0) return;
+
+  const btn  = document.getElementById('gen-btn');
+  const spin = document.getElementById('gen-spinner');
+  btn.disabled = true;
+  spin.classList.add('show');
+
+  const promedios  = done.map(k => data[k].resumen.promedio);
+  const promGlobal = (promedios.reduce((a,b)=>a+b,0)/promedios.length).toFixed(1);
+  const fort       = done.map(k => data[k].resumen.fortalezas).join('. ');
+  const mejora     = done.map(k => data[k].resumen.areas_mejora).join('. ');
+  const diags      = done.map(k => data[k].resumen.diagnostico).join(' ');
+  const nombre     = data[done[0]].estudiante || 'Estudiante';
+
+  document.getElementById('final-diag-container').innerHTML = `
+    <div class="final-diag fade-in">
+      <h2>Perfil conceptual — ${nombre}</h2>
+      <div class="fd-grid">
+        <div class="fd-item">
+          <h4>Promedio integrado</h4>
+          <p style="font-family:'DM Serif Display',serif;font-size:28px">${promGlobal}<span style="font-size:14px;font-weight:300"> / 10</span></p>
+        </div>
+        <div class="fd-item">
+          <h4>Semanas completadas</h4>
+          <p style="font-family:'DM Serif Display',serif;font-size:28px">${done.length}<span style="font-size:14px;font-weight:300"> / 3</span></p>
+        </div>
+        <div class="fd-item"><h4>Fortalezas</h4><p>${fort.substring(0,200)}</p></div>
+        <div class="fd-item"><h4>Áreas de mejora</h4><p>${mejora.substring(0,200)}</p></div>
+      </div>
+      <div class="fd-diag-text">${diags}</div>
+    </div>`;
+}
+
+function limpiarTodo(){
+  if(!confirm('¿Borrar todos los datos de evaluaciones guardados?')) return;
+  ['semana1','semana2','semana3'].forEach(k => localStorage.removeItem('edu046_'+k));
+  render();
+}
+
+function exportarDiagnostico(){
+  const data = loadData();
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'edu046_diagnostico_final.json';
+  a.click();
+}
+
+render();
+</script>
+{% endraw %}
+</body>
+</html>

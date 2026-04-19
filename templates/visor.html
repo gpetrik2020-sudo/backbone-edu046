@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ title }} — EDU046</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:    #0e0e0e;
+  --paper:  #f5f2eb;
+  --cream:  #ede9df;
+  --rule:   #c8c2b4;
+  --accent: #1a3a5c;
+  --muted:  #6b6560;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'Inter', sans-serif;
+  font-weight: 300;
+  font-size: 15px;
+  line-height: 1.7;
+}
+.topbar {
+  border-bottom: 2px solid var(--ink);
+  padding: 14px 48px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--paper);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.topbar a { font-family:'DM Mono',monospace; font-size:11px; color:var(--muted); text-decoration:none; letter-spacing:0.08em; }
+.topbar a:hover { color: var(--ink); }
+.topbar .sep { color: var(--rule); }
+.topbar .file-name {
+  font-family:'DM Mono',monospace;
+  font-size:11px;
+  color:var(--ink);
+  flex:1;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.wrap {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 48px 24px 80px;
+}
+.content h1, .content h2, .content h3, .content h4 {
+  font-family: 'DM Serif Display', serif;
+  font-weight: 400;
+  line-height: 1.25;
+  margin: 2em 0 0.6em;
+}
+.content h1 { font-size: 28px; margin-top: 0; }
+.content h2 { font-size: 22px; padding-bottom: 8px; border-bottom: 1px solid var(--rule); }
+.content h3 { font-size: 18px; }
+.content h4 { font-size: 15px; color: var(--muted); }
+.content p  { margin-bottom: 1.2em; }
+.content ul, .content ol { padding-left: 1.4em; margin-bottom: 1.2em; }
+.content li { margin-bottom: 0.4em; }
+.content blockquote {
+  border-left: 3px solid var(--accent);
+  padding: 12px 20px;
+  margin: 1.5em 0;
+  background: white;
+  color: var(--muted);
+  font-style: italic;
+}
+.content code {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  background: var(--cream);
+  padding: 2px 6px;
+  border-radius: 2px;
+}
+.content pre {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 20px;
+  border-radius: 3px;
+  overflow-x: auto;
+  margin-bottom: 1.2em;
+}
+.content pre code { background: none; color: inherit; padding: 0; }
+.content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1.2em;
+  font-size: 13px;
+}
+.content th {
+  text-align: left;
+  border-bottom: 2px solid var(--ink);
+  padding: 8px 10px;
+  font-weight: 500;
+}
+.content td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--cream);
+}
+.content a { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <a href="/">← EDU046</a>
+  <span class="sep">/</span>
+  <span class="file-name">{{ title }}</span>
+</div>
+<div class="wrap">
+  <div class="content">{{ content | safe }}</div>
+</div>
+</body>
+</html>
