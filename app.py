@@ -305,7 +305,7 @@ Responde ÚNICAMENTE en JSON válido con esta estructura exacta:
 
 @app.route('/diagnostico')
 def diagnostico():
-    return render_template('diagnostico.html')
+    return redirect('https://evaluaciones-edu046.onrender.com')
 
 
 if __name__ == '__main__':
